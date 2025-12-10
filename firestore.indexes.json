@@ -1,0 +1,15 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "associates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "slug",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
