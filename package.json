@@ -13,7 +13,18 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "setup": "node scripts/setup-firebase.js",
+    "deploy": "node scripts/deploy.js",
+    "seed": "node scripts/seed-associates.js",
+    "verify": "node scripts/verify-deployment.js",
+    "deploy:all": "./deploy-all.sh",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:firestore": "firebase deploy --only firestore"
+  },
+  "devDependencies": {
+    "firebase-admin": "^12.0.0"
   },
   "eslintConfig": {
     "extends": "react-app"
