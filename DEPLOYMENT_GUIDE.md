@@ -87,6 +87,23 @@ After deployment, seed the database with associates:
 node scripts/seed-associates.js
 ```
 
+**Before seeding, update associate data:**
+
+Edit `scripts/associates-data.js` with real associate information:
+
+```javascript
+const associates = [
+  {
+    name: "Jane Doe",
+    email: "jane.doe@iterra.com",
+    phone: "+15555555555",
+    doterraUrl: "https://www.doterra.com/US/en/site/janedoe",
+    role: "associate"  // or "admin"
+  },
+  // Add more associates...
+];
+```
+
 **Note:** You'll need a Firebase service account JSON file:
 1. Go to Firebase Console > Project Settings > Service Accounts
 2. Click "Generate New Private Key"
@@ -116,11 +133,28 @@ node scripts/deploy.js
 ```
 
 ### `scripts/seed-associates.js`
-Seeds Firestore database with associate data. Edit the `associates` array in the script to add real associate information.
+Seeds Firestore database with associate data from `associates-data.js`. Includes validation for email format (standard email regex) and phone format (E.164).
+
+**Before running:**
+1. Edit `scripts/associates-data.js` with real associate information
+2. Ensure Firebase service account JSON is available
 
 ```bash
 node scripts/seed-associates.js
 ```
+
+**Data format in associates-data.js:**
+- `name`: Full name (string, required)
+- `email`: Valid email address (string, required, validated)
+- `phone`: E.164 format phone (string, required, validated, e.g., +15555555555)
+- `doterraUrl`: Associate's doTERRA URL (string, required)
+- `role`: Either "associate" or "admin" (string, required)
+
+Auto-generated fields:
+- `slug`: Generated from email
+- `referralCode`: 8-character unique code
+- `referralCounter`: Initialized to 0
+- `createdAt`/`updatedAt`: Timestamps
 
 ### `scripts/verify-deployment.js`
 Verifies that hosting, functions, and Firestore are working correctly after deployment.

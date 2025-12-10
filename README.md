@@ -43,6 +43,31 @@ npm run verify   # Verify deployment
 
 See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for complete instructions.
 
+## 📝 Adding Real Associates
+
+Before seeding the database, update `scripts/associates-data.js` with real associate information:
+
+```javascript
+const associates = [
+  {
+    name: "Jane Doe",
+    email: "jane.doe@iterra.com",
+    phone: "+15555555555",  // E.164 format
+    doterraUrl: "https://www.doterra.com/US/en/site/janedoe",
+    role: "associate"  // or "admin"
+  },
+  // Add more associates...
+];
+```
+
+**Auto-generated fields:**
+- `slug`: From email (jane.doe@iterra.com → janedoe)
+- `referralCode`: 8-character unique code
+- `referralCounter`: Starts at 0
+- `createdAt`/`updatedAt`: Timestamps
+
+**Validation:** Script validates email format and phone format (E.164) before seeding.
+
 ---
 
 **Project**: iTerra Concierge Wellness Platform  

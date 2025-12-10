@@ -9,11 +9,17 @@
  * Requirements:
  * - Firebase Admin SDK credentials (service account JSON)
  * - Environment variable: FIREBASE_SERVICE_ACCOUNT_PATH
+ * - Associate data in scripts/associates-data.js
+ * 
+ * To update associates: Edit scripts/associates-data.js
  */
 
 const admin = require('firebase-admin');
 const fs = require('fs');
 const path = require('path');
+
+// Load associate data from external file
+const associates = require('./associates-data.js');
 
 // Initialize Firebase Admin
 function initializeFirebase() {
@@ -38,6 +44,52 @@ function initializeFirebase() {
   return admin.firestore();
 }
 
+// Validate email format
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Validate phone format (E.164)
+function validatePhone(phone) {
+  const phoneRegex = /^\+[1-9]\d{1,14}$/;
+  return phoneRegex.test(phone);
+}
+
+// Validate associate data
+function validateAssociate(associate, index) {
+  const errors = [];
+  
+  if (!associate.name || typeof associate.name !== 'string') {
+    errors.push('name is required and must be a string');
+  }
+  
+  if (!associate.email || !validateEmail(associate.email)) {
+    errors.push('email is required and must be valid');
+  }
+  
+  if (!associate.phone || !validatePhone(associate.phone)) {
+    errors.push('phone is required and must be in E.164 format (e.g., +15555555555)');
+  }
+  
+  if (!associate.doterraUrl || !associate.doterraUrl.startsWith('http')) {
+    errors.push('doterraUrl is required and must be a valid URL');
+  }
+  
+  if (!associate.role || !['associate', 'admin'].includes(associate.role)) {
+    errors.push('role must be either "associate" or "admin"');
+  }
+  
+  if (errors.length > 0) {
+    console.error(`\n❌ Validation failed for associate at index ${index}:`);
+    console.error(`   Name: ${associate.name || 'N/A'}`);
+    errors.forEach(error => console.error(`   - ${error}`));
+    return false;
+  }
+  
+  return true;
+}
+
 // Generate slug from email
 function generateSlug(email) {
   return email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -48,48 +100,25 @@ function generateReferralCode() {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
 }
 
-// Associate data - REPLACE WITH REAL DATA
-const associates = [
-  {
-    name: 'Sarah Johnson',
-    email: 'sarah.johnson@iterrawellness.com',
-    phone: '+1-555-0101',
-    doterraUrl: 'https://www.doterra.com/US/en/site/sarahjohnson',
-    role: 'Wellness Advocate'
-  },
-  {
-    name: 'Michael Chen',
-    email: 'michael.chen@iterrawellness.com',
-    phone: '+1-555-0102',
-    doterraUrl: 'https://www.doterra.com/US/en/site/michaelchen',
-    role: 'Wellness Advocate'
-  },
-  {
-    name: 'Emma Rodriguez',
-    email: 'emma.rodriguez@iterrawellness.com',
-    phone: '+1-555-0103',
-    doterraUrl: 'https://www.doterra.com/US/en/site/emmarodriguez',
-    role: 'Elite Wellness Advocate'
-  },
-  {
-    name: 'David Thompson',
-    email: 'david.thompson@iterrawellness.com',
-    phone: '+1-555-0104',
-    doterraUrl: 'https://www.doterra.com/US/en/site/davidthompson',
-    role: 'Wellness Advocate'
-  },
-  {
-    name: 'Lisa Martinez',
-    email: 'lisa.martinez@iterrawellness.com',
-    phone: '+1-555-0105',
-    doterraUrl: 'https://www.doterra.com/US/en/site/lisamartinez',
-    role: 'Elite Wellness Advocate'
-  }
-];
-
 // Seed associates to Firestore
 async function seedAssociates(db) {
   console.log('\n📊 Starting associate seeding...\n');
+  console.log(`📝 Found ${associates.length} associates to process\n`);
+  
+  // Validate all associates first
+  let validationPassed = true;
+  for (let i = 0; i < associates.length; i++) {
+    if (!validateAssociate(associates[i], i)) {
+      validationPassed = false;
+    }
+  }
+  
+  if (!validationPassed) {
+    console.error('\n❌ Validation failed! Please fix the errors above and try again.');
+    process.exit(1);
+  }
+  
+  console.log('✅ All associates validated successfully\n');
   
   const batch = db.batch();
   const results = [];
@@ -106,29 +135,35 @@ async function seedAssociates(db) {
       doterraUrl: associate.doterraUrl,
       slug: slug,
       referralCode: referralCode,
-      referrals: 0,
+      referralCounter: 0,  // Using referralCounter as per user's requirement
       role: associate.role,
       createdAt: timestamp,
       updatedAt: timestamp,
       active: true
     };
     
-    // Create document with email-based ID for consistency
+    // Create document with slug as ID for consistency
     const docId = slug;
     const docRef = db.collection('associates').doc(docId);
     batch.set(docRef, docData);
     
     results.push({
       name: associate.name,
+      email: associate.email,
+      phone: associate.phone,
       slug: slug,
       referralLink: `/go/${slug}`,
-      referralCode: referralCode
+      referralCode: referralCode,
+      role: associate.role
     });
     
     console.log(`✅ Prepared: ${associate.name}`);
+    console.log(`   Email: ${associate.email}`);
+    console.log(`   Phone: ${associate.phone}`);
     console.log(`   Slug: ${slug}`);
     console.log(`   Referral Link: /go/${slug}`);
-    console.log(`   Referral Code: ${referralCode}\n`);
+    console.log(`   Referral Code: ${referralCode}`);
+    console.log(`   Role: ${associate.role}\n`);
   }
   
   try {
@@ -138,7 +173,9 @@ async function seedAssociates(db) {
     console.log('📋 Summary:');
     console.log('═══════════════════════════════════════════════════════');
     results.forEach((result, index) => {
-      console.log(`${index + 1}. ${result.name}`);
+      console.log(`${index + 1}. ${result.name} (${result.role})`);
+      console.log(`   Email: ${result.email}`);
+      console.log(`   Phone: ${result.phone}`);
       console.log(`   Referral Link: https://your-domain.web.app${result.referralLink}`);
       console.log(`   Referral Code: ${result.referralCode}`);
       console.log('');
@@ -161,7 +198,7 @@ async function verifySeeding(db) {
   
   snapshot.forEach(doc => {
     const data = doc.data();
-    console.log(`   - ${data.name} (${data.slug}): ${data.referrals} referrals`);
+    console.log(`   - ${data.name} (${data.role}) [${data.slug}]: ${data.referralCounter || 0} referrals`);
   });
   
   console.log('\n✅ Verification complete!');
@@ -191,4 +228,11 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { seedAssociates, generateSlug, generateReferralCode };
+module.exports = { 
+  seedAssociates, 
+  generateSlug, 
+  generateReferralCode,
+  validateEmail,
+  validatePhone,
+  validateAssociate
+};
