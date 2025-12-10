@@ -1,6 +1,6 @@
 # Iterra Firebase Project - Status Update & Next Steps
 
-**Last Updated:** December 10, 2025  
+**Last Updated:** December 10, 2024  
 **Project:** Iterra Oils Platform - doTERRA Associate Referral Management System
 
 ---
@@ -53,9 +53,9 @@ The Iterra Oils platform is a **React-based web application** designed for manag
 
 ```
 Frontend:
-├── React 18.x
+├── React (latest stable)
 ├── React Router (4 routes)
-├── Firebase SDK 10.x
+├── Firebase SDK (latest stable)
 └── Modern CSS
 
 Backend:
@@ -189,16 +189,18 @@ Test these flows after deployment:
 
 ---
 
-## 📊 Current Project Statistics
+## 📊 Project Statistics (from PR #1)
 
 | Metric | Value |
 |--------|-------|
-| **Total Lines of Code** | ~19,435 |
+| **Total Lines Added** | ~19,435 |
 | **Files Changed** | 26 |
 | **React Components** | 4 main routes |
 | **Firebase Services** | 3 (Auth, Firestore, Functions) |
 | **Database Collections** | 1 (associates) |
 | **API Routes** | 4 (/, /associate, /admin, /go/:slug) |
+
+*Note: These statistics reflect the initial implementation in PR #1 and may evolve as the project develops.*
 
 ---
 
