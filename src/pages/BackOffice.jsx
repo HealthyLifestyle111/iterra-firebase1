@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Target, BookOpen, GraduationCap, Heart, LogOut, Briefcase, Lock, Star, Calendar, Award, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import { createPageUrl } from '../utils';
 import { firestoreService, authService, aiService, emailService } from '../services';
 import ManifestationManager from "../components/ManifestationManager";
 import UniversityBlueprint from "../components/UniversityBlueprint";

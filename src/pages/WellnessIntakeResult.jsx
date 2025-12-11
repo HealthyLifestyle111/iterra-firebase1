@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import { createPageUrl } from '../utils';
 import { firestoreService, authService, aiService, emailService } from '../services';
 import { Loader2, Download, Send } from "lucide-react";
 

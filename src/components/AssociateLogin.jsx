@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { firestoreService, authService, aiService, emailService } from '../services';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { AlertCircle, Loader2 } from "lucide-react";
 
 export default function AssociateLogin({ onClose, onSuccess }) {

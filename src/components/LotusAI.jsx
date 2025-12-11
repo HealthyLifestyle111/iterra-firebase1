@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Mic, Volume2, User, Loader2, Sparkles } from "lucide-react";
 import { firestoreService, authService, aiService, emailService } from '../services';
-import { createPageUrl } from "@/utils";
+import { createPageUrl } from '../utils';
 import MeditationPlayer from "./MeditationPlayer";
 import SeasonalCare from "./SeasonalCare";
 

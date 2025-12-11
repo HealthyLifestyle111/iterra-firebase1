@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { createPageUrl } from "@/utils";
+import { createPageUrl } from '../utils';
 import AssociateLogin from "../components/AssociateLogin";
 import LotusAI from "../components/LotusAI";
 

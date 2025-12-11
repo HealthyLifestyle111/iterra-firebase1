@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { firestoreService, authService, aiService, emailService } from '../services';
 import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import { Button } from "@/components/ui/button";
+import { createPageUrl } from '../utils';
+import { Button } from '../components/ui/button';
 import { ArrowLeft } from "lucide-react";
 
 export default function WellnessIntake() {
@@ -2445,7 +2445,7 @@ export default function WellnessIntake() {
             <button
               type="button"
               onClick={() => {
-                if (!confirm('Clear all form data? This cannot be undone.')) return;
+                if (!window.confirm('Clear all form data? This cannot be undone.')) return;
                 setFormData({
                   email: '', who: '', age: '', goals: [],
                   fullReset: false,

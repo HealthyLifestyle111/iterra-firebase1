@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { firestoreService, authService, aiService, emailService } from '../services';
 import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import { Button } from "@/components/ui/button";
+import { createPageUrl } from '../utils';
+import { Button } from '../components/ui/button';
 import { ArrowLeft, Lock, Loader2 } from "lucide-react";
 
 export default function SpecializedIntake() {
