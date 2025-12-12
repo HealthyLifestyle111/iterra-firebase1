@@ -67,6 +67,14 @@ export const authService = {
   signIn: (email, password) => auth.signInWithEmailAndPassword(email, password),
   signOut: () => auth.signOut(),
   signUp: (email, password) => auth.createUserWithEmailAndPassword(email, password),
+  isAuthenticated: () => Promise.resolve(!!auth.currentUser),
+  getCurrentUser: async () => {
+    const user = auth.currentUser;
+    if (!user) return null;
+    // Get user data from Firestore
+    const users = await firestoreOperations.getUserByEmail({ email: user.email });
+    return users.length > 0 ? users[0] : null;
+  },
 };
 
 export const aiService = aiOperations;

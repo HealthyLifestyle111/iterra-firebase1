@@ -835,7 +835,8 @@ function AssociateLoginEmbed({ onBack, onClose }) {
         return;
       }
 
-      authService.signIn(window.location.origin + '/BackOffice');
+      // Success - navigate to Back Office
+      window.location.href = '/back-office';
       
     } catch (err) {
       setError('Login failed. Please try again.');
