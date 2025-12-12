@@ -10,6 +10,7 @@ import * as storageOperations from './storage';
 import * as aiOperations from './ai';
 import * as emailOperations from './email';
 import { auth } from '../firebase';
+import { signInWithEmailAndPassword, signOut as firebaseSignOut, createUserWithEmailAndPassword } from 'firebase/auth';
 
 // Database entities
 export {
@@ -64,15 +65,18 @@ export const firestoreService = {
 
 export const authService = {
   currentUser: () => auth.currentUser,
-  signIn: (email, password) => auth.signInWithEmailAndPassword(email, password),
-  signOut: () => auth.signOut(),
-  signUp: (email, password) => auth.createUserWithEmailAndPassword(email, password),
+  signIn: (email, password) => signInWithEmailAndPassword(auth, email, password),
+  signOut: () => firebaseSignOut(auth),
+  signUp: (email, password) => createUserWithEmailAndPassword(auth, email, password),
   isAuthenticated: () => Promise.resolve(!!auth.currentUser),
   getCurrentUser: async () => {
     const user = auth.currentUser;
     if (!user) return null;
     // Get user data from Firestore
-    const users = await firestoreOperations.getUserByEmail({ email: user.email });
+    const userDoc = await firestoreOperations.Associate.get(user.uid);
+    if (userDoc) return userDoc;
+    // Fallback to email lookup
+    const users = await firestoreOperations.Associate.list({ email: user.email });
     return users.length > 0 ? users[0] : null;
   },
 };
