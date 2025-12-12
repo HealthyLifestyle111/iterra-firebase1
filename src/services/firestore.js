@@ -111,6 +111,23 @@ class FirestoreService {
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
+
+  /**
+   * Get user by email (for associates/users collections)
+   */
+  async getUserByEmail(filters) {
+    const conditions = [];
+    
+    if (filters.email) {
+      conditions.push({ field: 'email', operator: '==', value: filters.email });
+    }
+    
+    if (filters.associate_id) {
+      conditions.push({ field: 'associate_id', operator: '==', value: filters.associate_id });
+    }
+    
+    return this.query(conditions);
+  }
 }
 
 /**
@@ -141,6 +158,16 @@ export const SpecializedIntake = new FirestoreService('specializedIntakes');
 // Associates (existing)
 export const Associate = new FirestoreService('associates');
 
+// Users
+export const User = new FirestoreService('users');
+
+/**
+ * Helper function to get user by email (uses User service)
+ */
+export const getUserByEmail = async (filters) => {
+  return User.getUserByEmail(filters);
+};
+
 export default {
   WellnessIntake,
   Service,
@@ -149,5 +176,7 @@ export default {
   TrainingContent,
   MonthlyUpdate,
   SpecializedIntake,
-  Associate
+  Associate,
+  User,
+  getUserByEmail
 };
